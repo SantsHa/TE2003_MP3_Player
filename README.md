@@ -1,4 +1,5 @@
 # TE2003_MP3_Player
+<img src="connections/Arduino.JPG" width=300>  <img src="connections/oled.jpg" width=300>
 This app is an implementation of a music reproductor for Windows using pygames and PyQt5. It works well with mouse clicks and you can create a electrical circuits for a external use.
 To be able to use the application correctly we will have to download different libraries from the terminal
 
@@ -9,9 +10,6 @@ To be able to use the application correctly we will have to download different l
 
 ## Platform
 Currently this aplication is tested and run successfully on windows and raspbian.
-
-### This is the tiles version for Python 2 and 3
-![connections](/Arduino.JPG?raw=true "Arduino")
 
 ##Installation of PyQt5 on Raspbian
 sudo apt-get update
