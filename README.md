@@ -11,7 +11,7 @@ To be able to use the application correctly we will have to download different l
 Currently this aplication is tested and run successfully on windows and raspbian.
 
 ### This is the tiles version for Python 2 and 3
-![connections](/connections.png?raw=true "connections")
+![connections](/Arduino.jpg?raw=true "Arduino")
 
 ##Installation of PyQt5 on Raspbian
 sudo apt-get update
