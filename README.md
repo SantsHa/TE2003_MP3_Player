@@ -13,17 +13,22 @@ To be able to use the application correctly we will have to download different l
 Currently this aplication is tested and run successfully on windows and raspbian.
 
 ## Instalation
-Installation of PyQt5 on Raspbian
+Installation of PyQt5 on Raspbian:
+
 sudo apt-get update
 sudo apt-get install qt5-default 
 pyqt5-dev pyqt5-dev-tools
 
-Installation of PyQt5 on Windows
-pip install pyqt5-tools
+Installation of Pygames on Raspbian:
 
-Installation of Pygames on Raspbian
 sudo apt-get install python-pip
 sudo pip install pygame
 
-Installation of Pygames on Raspbian
+
+Installation of PyQt5 on Windows:
+
+pip install pyqt5-tools
+
+Installation of Pygames on Raspbian:
+
 pip install pygame
