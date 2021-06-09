@@ -20,7 +20,7 @@ class serialThreadClass(QThread):
             if data != '':
                 
                 self.msj.emit(str(data)) #pipe
-                print(data) #print to terminal
+                #print(data) #print to terminal
                 self.serDat=data # set serDat to data received
                 
             
