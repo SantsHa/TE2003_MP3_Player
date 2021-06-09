@@ -27,10 +27,10 @@ class Ui_MainWindow(object):
         self.stopButton.setGeometry(QtCore.QRect(110, 100, 75, 41))
         self.stopButton.setObjectName("stopButton")
         self.nextButton = QtWidgets.QPushButton(self.centralwidget)
-        self.nextButton.setGeometry(QtCore.QRect(200, 100, 75, 41))
+        self.nextButton.setGeometry(QtCore.QRect(290, 100, 75, 41)) #200, 100, 75, 41
         self.nextButton.setObjectName("nextButton")
         self.prevButton = QtWidgets.QPushButton(self.centralwidget)
-        self.prevButton.setGeometry(QtCore.QRect(290, 100, 75, 41))
+        self.prevButton.setGeometry(QtCore.QRect(200, 100, 75, 41)) #290, 100, 75, 41
         self.prevButton.setObjectName("prevButton")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(20, 10, 111, 31))
@@ -82,12 +82,12 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.playpButton.setText(_translate("MainWindow", "Play/Pause"))
-        self.stopButton.setText(_translate("MainWindow", "Alto"))
-        self.nextButton.setText(_translate("MainWindow", "Siguiente"))
-        self.prevButton.setText(_translate("MainWindow", "Anterior"))
+        self.stopButton.setText(_translate("MainWindow", "Stop"))
+        self.nextButton.setText(_translate("MainWindow", "Next"))
+        self.prevButton.setText(_translate("MainWindow", "Previous"))
         self.label.setText(_translate("MainWindow", "Now Playing:"))
         self.label_2.setText(_translate("MainWindow", "Playlist"))
-        self.label_3.setText(_translate("MainWindow", "Keypad input"))
+        self.label_3.setText(_translate("MainWindow", "Serial input"))
         self.menuMP3_Player.setTitle(_translate("MainWindow", "MP3 Player"))
 
 

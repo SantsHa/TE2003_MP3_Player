@@ -1,6 +1,6 @@
 #pyuic5.exe -x plotter.ui -o plotter.py
 
-#se importan las librerias
+# Required libraries
 import os
 import sys
 import time
@@ -11,7 +11,7 @@ from mp3 import *
 from pygame import *
 import pygame
 
-#import for Class for serial com
+# Import Class for serial communication with Arduino
 from serialThreadFile import serialThreadClass
 
 from oled import OLED
@@ -41,7 +41,7 @@ f = Font(2)
 pygame.mixer.init()
 pygame.display.init()
 
-#se crea la lista y se agregan las canciones
+# Playlist is created so as song files added
 playlist = []
 playlist.append ( "[9] CJ - Whoopty.mp3" )
 playlist.append ( "[8] ACDC - Highway To Hell.mp3" )
@@ -54,7 +54,7 @@ playlist.append ( "[2] Masked Wolf - Astronaut In The Ocean.mp3" )
 playlist.append ( "[1] Coldplay - Yellow.mp3" )
 playlist.append ( "[0] Jaden - Rainbow Bap.mp3" )
 
-# Lista de numeros 0 - 100
+# Number list 0-100
 a_list = []
 for i in range(100):
     a_list.append(str(i))
@@ -64,104 +64,112 @@ class Ui_MainWindow(QtWidgets.QMainWindow,Ui_MainWindow):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)    
         
-    # para la comunicacion serial
+    # Receive and send serial data in order to do something
         self.mySerial = serialThreadClass()
-        self.mySerial.msj.connect(self.serAct) # Recibe dato -> realiza accion deseada
+        self.mySerial.msj.connect(self.serAct) # Rec data -> do something
         self.mySerial.start() # run thread for receive
 	
-	#se agregan las canciones al widget de lista
+	# Songs are added to playlist widget
         for i in playlist:
             pos = 0
             self.listWidget.insertItem(pos,i)
             pos += 1
 	
-	#se establece por default al primer item
+	# First item as default
         self.listWidget.setCurrentRow(0)
         self.lineEdit.setReadOnly(True)
         #------------------------------------
         
-	#botones y acciones a realizar
+	# Buttons events
         self.listWidget.itemClicked.connect(self.playSong)
         self.playpButton.clicked.connect(self.playPause)
         self.stopButton.clicked.connect(self.stopSong)
         self.nextButton.clicked.connect(self.nextSong)
         self.prevButton.clicked.connect(self.prevSong)
 	
-    # Cada vez que se de un click cualquier item de la lista, se reproduce esa cancion 	
+    # Whenever an iten in the list is clicked, that song will play 	
     def playSong(self):
-	# Se carga la cancion seleccionada y se reproduce
+	# Load selected file and reproduce it
         song = self.listWidget.currentItem().text()[4:]
         pygame.mixer.music.load(song)
         pygame.mixer.music.play()
 	
-	# Se muestran los datos de la cancion en reproduccion
+	# Song info is displayed in the GUI
         audiofile = eyed3.load(song)
         album_n = ''.join(map(str,audiofile.tag.track_num))
         self.lineEdit.setText("")
         self.lineEdit.setText(audiofile.tag.artist + " - " + audiofile.tag.title + " | " + audiofile.tag.album + " - " + album_n[0])
-        # se imprimen en el OLED
-        dis.clear()
-        f.scale = 1
+        
+        # Song info is displayed in the OLED
+        dis.clear()                                # clear dispplay
+        f.scale = 1                                # set text scale to 1
         f.print_string(0, 0, audiofile.tag.artist) # print artist
         f.print_string(0, 14, audiofile.tag.title) # print title
         f.print_string(0, 24, audiofile.tag.album) # print albun & albun No.
         dis.update()                               # send video buffer to display
-        dis.deactivate_scroll()
+        dis.deactivate_scroll()                    # diable scroll functino
 
-    # Verifica el estatus de la cancion y se reproduce o pausa segun el status
+    # Check song status and play/pause it
     def playPause(self):
-        self.status = pygame.mixer.music.get_busy()
-        if self.status:
+        self.status = pygame.mixer.music.get_busy() # check song is playing or paused
+        if self.status:                             # if playing -> pause
             pygame.mixer.music.pause()
-        if not self.status:
+        if not self.status:                         # if paused -> play
             pygame.mixer.music.unpause()
-        self.status = not self.status
+        self.status = not self.status               # update status
 
-    # Se para la reproduccion de la cancion actual
+    # Stop current song
     def stopSong(self):
         pygame.mixer.music.stop()
 
-    # Se reproduce la siguiente cancion dentro de la lista
+    # Plays next song in the playlist
     def nextSong(self):
-        self.listWidget.setCurrentRow(self.listWidget.currentRow()+1)
+        self.listWidget.setCurrentRow(self.listWidget.currentRow()+1) # move 1 pos forward in list
         self.playSong()
 
-   # Se reproduce la cancion anterior en la lista
+   # Plays previous song in the playlist
     def prevSong(self):
-        self.listWidget.setCurrentRow(self.listWidget.currentRow()-1)
+        self.listWidget.setCurrentRow(self.listWidget.currentRow()-1) # move 1 pos backward in list
         self.playSong()
     
-    # Accion de acuerdo al serial
+    # Do somehting according to data received
     def serAct(self):
-        myDat = self.mySerial.serDat
-        #self.textEdit.append(myDat)
+        myDat = self.mySerial.serDat # myDat -> serial received data
         
+        # Number input (0 - 100) 
         if myDat in a_list:
-            self.textEdit.append("Track: " + myDat)
-            self.listWidget.setCurrentRow(int(myDat))
-            self.playSong()
-            
-        if myDat == 'A':
-            self.textEdit.append("Play/Pause")
-            self.playPause()
-            
-        if myDat == 'B':
-            self.textEdit.append("Stop Song")
-            self.stopSong()
+            self.textEdit.append("Track: " + myDat)   # show input in the GUI
+            self.listWidget.setCurrentRow(int(myDat)) # set playlist pos to number input 
+            self.playSong()                           # call play function
         
-        if myDat == 'C':
-            self.textEdit.append("Next Song")
-            self.nextSong()
+        # Play/Pause song
+        if myDat == 'Play' or myDat == "Pause":
+            self.textEdit.append("Play/Pause") # show input in the GUI
+            self.playPause()                   # call play/pause function
         
-        if myDat == 'D':
-            self.textEdit.append("Previous Song")
-            self.prevSong()
+        # Stop current song
+        if myDat == "Stop":
+            self.textEdit.append("Stop Song") # show input in the GUI
+            self.stopSong()                   # call stop function
+        
+        # Play next song in playlist
+        if myDat == "Next Song":
+            self.textEdit.append("Next Song") # show input in the GUI
+            self.nextSong()                   # call nextSong function
+        
+        # Play previous song in playlist
+        if myDat == "Prev Song":
+            self.textEdit.append("Previous Song") # show input in the GUI
+            self.prevSong()                       # call prevSong function
+            
+        # else do nothing
+        else:
+            pass
 
 
 if __name__ == "__main__":
     
-    #while arduino.is_open:
-    
+    # Initialize everything and reproduce it    
     app = QtWidgets.QApplication([])
     window = Ui_MainWindow()
     window.show()
