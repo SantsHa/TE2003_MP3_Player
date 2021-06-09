@@ -2,51 +2,54 @@
 #include "task.h"
 #include <Keypad.h>
 
+// Buttons Struct
 struct taskID{
-  String id;     //tipo tarea
-  uint16_t value = 0; //estado actual del pin
-  uint16_t prev_value = 0;
+
+  String id;                // Task id
+  uint16_t value = 0;       // Actual state for pin
+  uint16_t prev_value = 0;  // Preview state for pin
+
 };
 
-//Teclado
-//----------------
-const byte n = 4;
-const byte m = 4;
- 
+//---Keypad---
+
+const byte n = 4; // Rows number
+const byte m = 4; // Colums number
+
+// Keypad data
 char keys[n][m] = {
-  
+
    { '1','2','3', 'A' },
    { '4','5','6', 'B' },
    { '7','8','9', 'C' },
    { '*','0','#', 'D' }
-   
+
 };
- 
+
+// Set digital pin for rows and columns
 const byte rowPins[n] = { 13, 12, 11, 10 };
 const byte columnPins[m] = { 9, 8, 7, 6 };
- 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, columnPins, n, m);
 
-// Definimos el tiempo de espera
-const TickType_t xTicksToWait = pdMS_TO_TICKS(100);
-
-// constantes
+// Set digital pin for buttons
 const int play_pin = 5;
 const int stop_pin = 4;
 const int prev_pin = 3;
 const int next_pin = 2;
+
+// Variable to toggle the play/pause button
 bool temp;
 
-//Acciones de los botones
-//-----------------------
-
+// ---Critical function (Serial Print)---
 void sendData(String data){
-    
+
        Serial.println(data);
-       delay(500);
-    
+
 }
 
+//---Buttons---
+
+// Play/pause task
 void sendPlayP(void *pvParameters){
 
   struct taskID p_button;
@@ -56,33 +59,40 @@ void sendPlayP(void *pvParameters){
 
     p_button.prev_value = p_button.value;
     p_button.value = digitalRead(play_pin);
-    
+
     if(p_button.prev_value == 0 && p_button.value == 1){
-    
+
       if(temp == false){
-      
-        p_button.id = "Play";  
+
+        p_button.id = "Play";
         temp = true;
-      
+
       }else{
-      
+
         p_button.id = "Pause";
         temp = false;
-      
+
       }
 
-      taskENTER_CRITICAL();  
+      // Start Critical Seccion
+      taskENTER_CRITICAL();
+
+      // Critical function
       sendData(p_button.id);
+
+      // End Critical Seccion
       taskEXIT_CRITICAL();
-      
+
     }
-   
+
+    // Set the number of ticks to send the task to block state
     vTaskDelay(pdMS_TO_TICKS(100));
-    
+
   }
-  
+
 }
 
+// Stop button task
 void sendStop(void *pvParameters){
 
   struct taskID stopB;
@@ -95,23 +105,30 @@ void sendStop(void *pvParameters){
     stopB.value = digitalRead(stop_pin);
 
     if(stopB.prev_value == 0 && stopB.value == 1){
-      
-      taskENTER_CRITICAL();  
+
+      // Start Critical Seccion
+      taskENTER_CRITICAL();
+
+      // Critical function
       sendData(stopB.id);
+
+      // End Critical Seccion
       taskEXIT_CRITICAL();
-      
+
     }
-    
+
+    // Set the number of ticks to send the task to block state
     vTaskDelay(pdMS_TO_TICKS(100));
-    
+
   }
-  
+
 }
 
+// Next button task
 void sendNext(void *pvParameters){
 
   struct taskID next;
-  
+
   next.id = "Next Song";
 
   while(1){
@@ -120,19 +137,26 @@ void sendNext(void *pvParameters){
     next.value = digitalRead(next_pin);
 
     if(next.prev_value == 0 && next.value == 1){
-      
-      taskENTER_CRITICAL();  
+
+      // Start Critical Seccion
+      taskENTER_CRITICAL();
+
+      // Critical function
       sendData(next.id);
+
+      // End Critical Seccion
       taskEXIT_CRITICAL();
-      
+
     }
-    
+
+    // Set the number of ticks to send the task to block state
     vTaskDelay(pdMS_TO_TICKS(100));
-    
+
   }
-  
+
 }
 
+// Preview button task
 void sendPrev(void *pvParameters){
 
   struct taskID prev;
@@ -144,19 +168,26 @@ void sendPrev(void *pvParameters){
     prev.value = digitalRead(prev_pin);
 
     if(prev.prev_value == 0 && prev.value == 1){
-      
-      taskENTER_CRITICAL();  
+
+      // Start Critical Seccion
+      taskENTER_CRITICAL();
+
+      // Critical function
       sendData(prev.id);
+
+      // End Critical Seccion
       taskEXIT_CRITICAL();
-      
+
     }
-    
+
+    // Set the number of ticks to send the task to block state
     vTaskDelay(pdMS_TO_TICKS(100));
-    
+
   }
-  
+
 }
 
+// Keypad seleccion task
 void song_select(void *pvParameters){
 
   struct taskID song;
@@ -164,66 +195,75 @@ void song_select(void *pvParameters){
   uint16_t num;
 
    while(1){
-  
+
+     // Get the key pressed
      char option = keypad.getKey();
 
      if(option != 'A' && option != 'B' && option != 'C' && option != 'D' && option != '#'&&  option != NULL){
 
+      // The character '*' simulates the confirm operation
       if(option == '*'){
 
-      taskENTER_CRITICAL(); 
-      
+      // Start Critical Seccion
+      taskENTER_CRITICAL();
+
+      // Convert the song_num variable to int
       num = song_num.toInt();
-      
+
       if(num <= 100){
-        
+
+        // Critical function
         sendData(song_num);
-        
+
       }else{
-        
-        sendData("Not_selection");  
-        
+
+        sendData("Not_selection");
+
       }
-        
-      song_num = ""; 
-      
+
+      // Reset the song_numn variable
+      song_num = "";
+
+      // End Critical Seccion
       taskEXIT_CRITICAL();
-        
+
       }else{
 
+        // Append to song_num variable the pressed key
         song_num += option;
-          
+
         }
-        
+
       }
 
+        // Clear the option variable
         option = NULL;
 
+        // Set the number of ticks to send the task to block state
         vTaskDelay(pdMS_TO_TICKS(100));
 
      }
-            
+
 }
 
 void setup(){
- 
-  //initialize serial
+
+  // Initialize serial
   Serial.begin(9600);
 
-  
-  
+  // Set the buttons pins as a input
   pinMode(play_pin, INPUT);
   pinMode(stop_pin, INPUT);
   pinMode(prev_pin, INPUT);
   pinMode(next_pin, INPUT);
 
-  //create tasks
+  // Create tasks
   xTaskCreate (sendPlayP,   "Play/Pausa"  , 100, NULL, 2, NULL);
   xTaskCreate (sendStop,    "Stop"        , 100, NULL, 2, NULL);
   xTaskCreate (sendNext,    "Nxt Song"    , 100, NULL, 2, NULL);
   xTaskCreate (sendPrev,    "Prev Song"   , 100, NULL, 2, NULL);
   xTaskCreate (song_select, "Song Number" , 100, NULL, 2, NULL);
-  
+
 }
 
 void loop(){}
