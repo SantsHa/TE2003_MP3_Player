@@ -2,7 +2,9 @@
 <img src="connections/Arduino.JPG" width=300>  <img src="connections/oled.jpg" width=200>
 
 This app is an implementation of a music reproductor for Windows using pygames and PyQt5. It works well with mouse clicks and you can create a electrical circuits for a external use.
-To be able to use the application correctly we will have to download different libraries from the terminal
+To be able to use the application correctly we will have to download different libraries from the terminal.
+
+### [MP3 Demo](https://drive.google.com/file/d/1fAL5woXjTIME7PsP_ZVAGOoKbWKi1t5D/view?usp=sharing)
 
 ## Requirements
 * python
